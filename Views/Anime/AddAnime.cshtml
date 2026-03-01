@@ -54,7 +54,7 @@
                                         </div>
                                     }
                                 </div>
-                                <span asp-validation-for="AnimeGenres" class="text-danger"></span>
+                                <span class="text-danger">@Html.ValidationMessage("selectedGenreIds")</span>
                             </div>
 
                             <div class="col-md-4 mb-3">
@@ -69,6 +69,7 @@
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-bold">Anime Poster</label>
                                 <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+                                <span asp-validation-for="ImageUrl" class="text-danger"></span>
 
                             </div>
                             <div class="col-md-4 mb-3">

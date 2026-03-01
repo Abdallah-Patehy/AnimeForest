@@ -56,7 +56,7 @@ namespace Anime_Forest.Controllers
             return View("AddAnime");
         }
         [HttpPost]
-        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Save(Anime anime, List<int> selectedGenreIds, IFormFile ImageFile)
         {
             ViewData["studioslist"] = StudioRepository.GetAll();
@@ -71,11 +71,16 @@ namespace Anime_Forest.Controllers
                     ImageFile.CopyTo(stream);
                 }
                 anime.ImageUrl = fileName;
+                ModelState.Remove(nameof(Anime.ImageUrl));
+            }
+            else if (string.IsNullOrWhiteSpace(anime.ImageUrl))
+            {
+                ModelState.AddModelError(nameof(Anime.ImageUrl), "Please upload an anime poster.");
             }
 
             if (selectedGenreIds == null || !selectedGenreIds.Any())
             {
-                ModelState.AddModelError("GenreId", "Please select at least one genre.");
+                ModelState.AddModelError(nameof(selectedGenreIds), "Please select at least one genre.");
             }
             else
             {
