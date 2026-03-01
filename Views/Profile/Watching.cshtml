@@ -1,0 +1,49 @@
+﻿@model List<Anime>
+@{
+    ViewData["Title"] = "Watching";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">My Watching Anime</h2>
+    <a asp-controller="Anime" asp-action="Animes" class="btn btn-outline-secondary">Browse Anime</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">You have no Watching yet.</div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var anime in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="~/images/@anime.ImageUrl" class="card-img-top" alt="@anime.Title" style="height:260px; object-fit:cover;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@anime.Title</h5>
+                        @if (anime.AnimeGenres != null && anime.AnimeGenres.Any())
+                        {
+                            @foreach (var animeGenre in anime.AnimeGenres)
+                            {
+                                <span class="genre-tag">@animeGenre.Genre.Name</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="genre-tag"> "N/A"</span>
+                        }
+                        <p class="card-text text-muted">Studio: @(anime.Studio?.Name ?? "N/A")</p>
+                        <a asp-controller="Anime" asp-action="AnimeDetails" asp-route-id="@anime.Id" class="btn btn-primary mt-auto">Details</a>
+                        <form asp-controller="Anime" asp-action="RemoveFromWatchList" method="post" class="mt-2">
+                            <input type="hidden" name="animeId" value="@anime.Id" />
+                            <button type="submit" class="btn btn-danger w-100">
+                                Remove from Watching
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

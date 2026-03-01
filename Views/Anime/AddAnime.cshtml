@@ -1,0 +1,91 @@
+﻿@model Anime
+
+@{
+    ViewData["Title"] = "Add New Anime";
+    var selectstudio = new SelectList((List<Studio>)ViewData["studioslist"], "Id", "Name");
+    var genres = (List<Genre>)ViewData["genereslist"];
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white text-center">
+                    <h4 class="mb-0">Add New Anime</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Save" method="post" enctype="multipart/form-data">
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Title" class="form-label fw-bold">Anime Title</label>
+                                <input asp-for="Title" class="form-control" placeholder="Enter Title..." />
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Description" class="form-label fw-bold">Description</label>
+                                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Studio" class="form-label fw-bold">Studio</label>
+                                <select asp-for="StudioId" class="form-select" asp-items="selectstudio">
+                                    <option value="">-- Select Studio --</option>
+                                </select>
+                                <span asp-validation-for="StudioId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Genres (Choose one or more)</label>
+                                <div class="border rounded p-2" style="max-height: 190px; overflow-y:auto;">
+                                    @foreach (var genre in genres)
+                                    {
+                                        <div class="form-check">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   name="selectedGenreIds"
+                                                   value="@genre.Id"
+                                                   id="genre_@genre.Id" />
+                                            <label class="form-check-label" for="genre_@genre.Id">
+                                                @genre.Name
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                                <span asp-validation-for="AnimeGenres" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="ReleaseYear" class="form-label fw-bold">Release Year</label>
+                                <input asp-for="ReleaseYear" type="number" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="EpisodeCount" class="form-label fw-bold">Episodes</label>
+                                <input asp-for="EpisodeCount" type="number" class="form-control" />
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Anime Poster</label>
+                                <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Status" class="form-label fw-bold">Status</label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="Ongoing">Ongoing</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Save Anime</button>
+                            <a asp-action="Index" class="btn btn-link text-secondary">Back to List</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

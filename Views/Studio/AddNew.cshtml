@@ -1,0 +1,33 @@
+﻿@model Studio
+
+@{
+    ViewData["Title"] = "Add New Studio";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white text-center">
+                    <h4 class="mb-0">Add New Studio</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Save" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Name" class="form-label fw-bold">Studio Name</label>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="Enter studio name..." />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Save Studio</button>
+                            <a asp-action="Index" class="btn btn-link text-secondary">Back to List</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

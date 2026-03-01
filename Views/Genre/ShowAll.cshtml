@@ -1,0 +1,10 @@
+﻿@model List<Genre>
+@{
+    ViewData["Title"] = "ShowAll";
+}
+
+<h1>Show All Genre </h1>
+@foreach (var g in Model)
+{
+    <h1>@g.Name </h1>
+}

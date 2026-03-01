@@ -1,0 +1,10 @@
+﻿@model List<Studio>
+@{
+    ViewData["Title"] = "ShowAll";
+}
+
+<h1>Show All Studios </h1>
+@foreach(var s in Model)
+{
+    <h1>@s.Name </h1>
+}

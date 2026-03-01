@@ -1,0 +1,83 @@
+﻿@model List<Anime>
+
+@{
+    ViewData["Title"] = "Anime Management";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white fw-bold">Management: <span class="text-info">Anime List</span></h2>
+        <a asp-action="Save" class="btn btn-success px-4">
+            <i class="bi bi-plus-lg"></i> Add New Anime
+        </a>
+    </div>
+
+    <div class="card shadow border-0 bg-dark">
+        <div class="card-body p-0">
+            <table class="table table-dark table-hover mb-0 align-middle text-center">
+                <thead class="table-secondary text-dark">
+                    <tr>
+                        <th style="width: 5%">ID</th>
+                        <th style="width: 10%">Poster</th>
+                        <th style="width: 30%">Title</th>
+                        <th style="width: 15%">Studio</th>
+                        <th style="width: 15%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@a.Id</td>
+                            <td>
+                                <img src="~/images/@a.ImageUrl"
+                                     alt="Poster"
+                                     style="width: 50px; height: 70px; object-fit: cover; border-radius: 5px;" />
+                            </td>
+                            <td class="text-start fw-bold text-info">@a.Title</td>
+                            <td>@(a.Studio?.Name ?? "N/A")</td>
+
+                            <td>
+                                <div class="btn-group" role="group">
+                                    @* زر التعديل *@
+                                    <a asp-action="Edit" asp-route-id="@a.Id" class="btn btn-outline-warning btn-sm mx-1">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+
+                                    @* زر الحذف مع تأكيد *@
+                                    <form asp-action="Delete" asp-route-id="@a.Id" method="post"
+                                          onsubmit="return confirm('Are you sure you want to delete (@a.Title)?');"
+                                          style="display:inline;">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning mt-4 text-center">
+            No animes found in the forest! 🌲
+        </div>
+    }
+</div>
+
+<style>
+    /* لمسة جمالية للجدول */
+    .table-hover tbody tr:hover {
+        background-color: rgba(102, 252, 241, 0.1) !important;
+        transition: 0.3s;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5em 0.8em;
+    }
+</style>

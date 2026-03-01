@@ -1,0 +1,284 @@
+﻿@model Anime
+
+@{
+    ViewData["Title"] = Model.Title;
+    var currentStatus = ViewBag.UserWatchStatus as WatchStatus?;
+    bool isFav = ViewBag.IsFavorite ?? false;
+}
+
+<style>
+    body {
+        background-color: #0b0c10; /* أسود عميق */
+        color: #ffffff;
+    }
+
+    .anime-container {
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    /* ستايل البوستر */
+    .poster-img {
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(102, 252, 241, 0.2); /* توهج خفيف */
+        border: 1px solid #1f2833;
+    }
+
+    /* ستايل تفاصيل المعلومات */
+    .info-box {
+        background-color: #1f2833;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .info-label {
+        color: #66fcf1; /* لون تركواز هادئ للمسميات */
+        font-weight: bold;
+        display: block;
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+
+    .description-text {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #c5c6c7;
+        text-align: justify;
+    }
+
+    .anime-title-main {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #66fcf1;
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .genre-tag {
+        background: #45a29e;
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        margin-right: 5px;
+    }
+
+    .heart-container {
+        --heart-color: rgb(255, 91, 137);
+        position: relative;
+        width: 50px;
+        height: 50px;
+        transition: .3s;
+    }
+
+        .heart-container .checkbox {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            z-index: 20;
+            cursor: pointer;
+        }
+
+        .heart-container .svg-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heart-container .svg-outline,
+        .heart-container .svg-filled {
+            fill: var(--heart-color);
+            position: absolute;
+        }
+
+        .heart-container .svg-filled {
+            animation: keyframes-svg-filled 1s;
+            display: none;
+        }
+
+        .heart-container .svg-celebrate {
+            position: absolute;
+            animation: keyframes-svg-celebrate .5s;
+            animation-fill-mode: forwards;
+            display: none;
+            stroke: var(--heart-color);
+            fill: var(--heart-color);
+            stroke-width: 2px;
+        }
+
+        .heart-container .checkbox:checked ~ .svg-container .svg-filled {
+            display: block
+        }
+
+        .heart-container .checkbox:checked ~ .svg-container .svg-celebrate {
+            display: block
+        }
+
+    @@keyframes keyframes-svg-filled {
+        0% {
+            transform: scale(0);
+        }
+
+        25% {
+            transform: scale(1.2);
+        }
+
+        50% {
+            transform: scale(1);
+            filter: brightness(1.5);
+        }
+    }
+
+    @@keyframes keyframes-svg-celebrate {
+        0% {
+            transform: scale(0);
+        }
+
+        50% {
+            opacity: 1;
+            filter: brightness(1.5);
+        }
+
+        100% {
+            transform: scale(1.4);
+            opacity: 0;
+            display: none;
+        }
+    }
+
+</style>
+
+<div class="container anime-container">
+    <div class="row flex-row-reverse">
+        @* flex-row-reverse عشان نخلي البوستر يمين والوصف شمال *@
+
+        <div class="col-lg-4 text-center">
+            <img src="~/images/@Model.ImageUrl" class="poster-img" alt="@Model.Title">
+
+            <h2 class="mt-3 fw-bold">@Model.Title</h2>
+
+            <div class="info-box text-start">
+                <span class="info-label">Studio</span>
+                <p>@(Model.Studio?.Name ?? "N/A")</p>
+
+                <span class="info-label">Genres</span>
+                @if (Model.AnimeGenres != null && Model.AnimeGenres.Any())
+                {
+                    @foreach (var animeGenre in Model.AnimeGenres)
+                    {
+                        <span class="genre-tag">@animeGenre.Genre.Name</span>
+                    }
+                }
+                else
+                {
+                    <span class="genre-tag"> "N/A"</span>
+                }
+
+                <span class="info-label">Status</span>
+                <p>@Model.Status</p>
+
+                <span class="info-label">Release Year</span>
+                <p>@Model.ReleaseYear</p>
+
+                <span class="info-label">Total Episodes</span>
+                <p>@Model.EpisodeCount</p>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form id="favForm" method="post"
+                          asp-action="@(isFav ? "DeleteFromFav" : "AddToFav")">
+                        <input type="hidden" name="animeId" value="@Model.Id" />
+                    </form>
+                    <div class="heart-container" title="Favorite">
+                        <input type="checkbox" class="checkbox" id="favCheckbox"
+                               @(isFav ? "checked" : "")
+                               onchange="document.getElementById('favForm').submit()">
+                        <div class="svg-container">
+                            <svg viewBox="0 0 24 24" class="svg-outline" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Zm-3.585,18.4a2.973,2.973,0,0,1-3.83,0C4.947,16.006,2,11.87,2,8.967a4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,11,8.967a1,1,0,0,0,2,0,4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,22,8.967C22,11.87,19.053,16.006,13.915,20.313Z"></path>
+                            </svg>
+                            <svg viewBox="0 0 24 24" class="svg-filled" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Z"></path>
+                            </svg>
+                            <svg class="svg-celebrate" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="10,10 20,20"></polygon>
+                                <polygon points="10,50 20,50"></polygon>
+                                <polygon points="20,80 30,70"></polygon>
+                                <polygon points="90,10 80,20"></polygon>
+                                <polygon points="90,50 80,50"></polygon>
+                                <polygon points="80,80 70,70"></polygon>
+                            </svg>
+                        </div>
+                    </div>
+
+
+
+
+                    <form asp-action="AddToWatchList" method="post">
+                        <input type="hidden" name="animeId" value="@Model.Id" />
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="status" value="1" id="planned"
+                                   @(currentStatus == WatchStatus.Planned ? "checked" : "")>
+                            <label class="form-check-label" for="planned">Planned</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="status" value="2" id="watching"
+                                   @(currentStatus == WatchStatus.Watching ? "checked" : "")>
+                            <label class="form-check-label" for="watching">Watching</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="status" value="3" id="completed"
+                                   @(currentStatus == WatchStatus.Completed ? "checked" : "")>
+                            <label class="form-check-label" for="completed">Completed</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="status" value="4" id="dropped"
+                                   @(currentStatus == WatchStatus.Dropped ? "checked" : "")>
+                            <label class="form-check-label" for="dropped">Dropped</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-3">Save</button>
+                    </form>
+                }
+
+
+                <span class="info-label">Popularity</span>
+                <p>@Model.PopularityScore</p>
+            
+            </div>
+        </div>
+
+        <div class="col-lg-8 pe-lg-5">
+            <h1 class="anime-title-main mb-4">Synopsis</h1>
+            <p class="description-text">
+                @Model.Description
+            </p>
+
+            <hr class="my-5" style="background-color: #45a29e; opacity: 0.5;">
+
+            @* هنا ممكن تحط قائمة الحلقات مستقبلاً *@
+            <h3 class="text-info mb-4">Episodes List</h3>
+            @* <div class="list-group">
+                @if (Model.Episodes != null && Model.Episodes.Any())
+                {
+                    @foreach (var ep in Model.Episodes.OrderBy(e => e.EpisodeNumber))
+                    {
+                        <div class="list-group-item bg-dark text-white border-secondary mb-2 d-flex justify-content-between">
+                            <span>Episode @ep.EpisodeNumber : @ep.Title</span>
+                            <button class="btn btn-sm btn-outline-info">Play</button>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted italic">No episodes available yet.</p>
+                }
+            </div> *@
+        </div>
+
+    </div>
+</div>
